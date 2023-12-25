@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<microprocessor name="GPS Waypoint Controller v3" description="Touch-controlled navigation system" width="2" length="4" id_counter="30" id_counter_node="8" sym0="24" sym1="8" sym2="8" sym4="20004" sym5="16938" sym6="17130" sym7="17066" sym8="61162" sym10="3630" sym11="2090" sym12="3818" sym13="674" sym14="3822">
+	<nodes>
+		<n id="1" component_id="2">
+			<node label="GPS-X" mode="1" type="1" description="Input from GPS">
+				<position z="1"/>
+			</node>
+		</n>
+		<n id="2" component_id="4">
+			<node label="GPS-Y" mode="1" type="1" description="Input from GPS"/>
+		</n>
+		<n id="3" component_id="7">
+			<node label="Display Output" type="6" description="Nav Display Output">
+				<position x="1" z="2"/>
+			</node>
+		</n>
+		<n id="5" component_id="16">
+			<node label="Touch Output" type="6" description="Touch Surface Output">
+				<position x="1" z="3"/>
+			</node>
+		</n>
+		<n id="6" component_id="18">
+			<node label="Compass Input" mode="1" type="1" description="Angle to north">
+				<position z="2"/>
+			</node>
+		</n>
+		<n id="7" component_id="22">
+			<node label="Input" mode="1" type="5" description="Touch Input.">
+				<position z="3"/>
+			</node>
+		</n>
+	</nodes>
+	<group>
+		<data type="-740229226">
+			<inputs/>
+			<outputs/>
+		</data>
+		<components>
+			<c type="56">
+				<object id="10" script='local a=3;local b=4;local c=1;local d=1;local e=2;local f=3;local g=0;local h=0;local i=1;local j=2;local k=2;local l=8;function gotoMenuCb(m)uiState.menu={}uiState.currentMenu=m;if ui.menus[m].init~=nil then ui.menus[m].init()end end;function gotoMenu(m)return function()gotoMenuCb(m)end end;function add(n)return function()uiState.menu.val=uiState.menu.val..n end end;function remove()return function()local o=string.len(uiState.menu.val)if o==1 then gotoMenuCb("main")else uiState.menu.val=string.sub(uiState.menu.val,1,-2)end end end;ui={menus={main={components={{t="txt",text="=NAV=",w=4},{t="btn",text="FREE",y=1,w=4,act=gotoMenu("freeNav")},{t="btn",text="SET",y=2,w=4,act=gotoMenu("keypad")},{t="btn",text="LOCOD",y=3,w=4,act=gotoMenu("locode")}}},freeNav={init=function()sendOp(i)end,components={{t="banner",text="FREE",y=1,w=4},{t="banner",text="NAV",y=2,w=4},{t="btn",text="&lt;-",y=3,x=2,w=2,act=gotoMenu("main")}}},locode={components={{t="banner",text="LOCODE",y=1,w=4},{t="banner",text="TBD",y=2,w=4},{t="btn",text="&lt;-",y=3,x=2,w=2,act=gotoMenu("main")}}},keypad={init=function()uiState.menu.val="+"end,components={{t="txt",w=3,text=function()return uiState.menu.val end},{t="btn",text="1",y=1,act=add(1)},{t="btn",text="2",x=1,y=1,act=add(2)},{t="btn",text="3",x=2,y=1,act=add(3)},{t="btn",text="X",x=3,y=1,act=remove()},{t="btn",text="4",y=2,act=add(4)},{t="btn",text="5",x=1,y=2,act=add(5)},{t="btn",text="6",x=2,y=2,act=add(6)},{t="btn",x=3,y=2,text=function()if uiState.menu.val=="+"then return"-"elseif uiState.menu.val=="-"then return"+"else return"0"end end,act=function()if uiState.menu.val=="+"then uiState.menu.val="-"elseif uiState.menu.val=="-"then uiState.menu.val="+"else uiState.menu.val=uiState.menu.val.."0"end end},{t="btn",text="7",y=3,act=add(7)},{t="btn",text="8",x=1,y=3,act=add(8)},{t="btn",text="9",x=2,y=3,act=add(9)},{t="btn",text="V",x=3,y=3,act=function()if uiState.menu.x==nil then uiState.menu.x=tonumber(uiState.menu.val)uiState.menu.val="+"else sendOp(j,uiState.menu.x,tonumber(uiState.menu.val))gotoMenuCb("main")end end}}}}}uiState={currentMenu="main",colors={},menu={}}touchCtl={}function sendOp(p,q,r)output.setNumber(d,p or g)output.setNumber(e,q or h)output.setNumber(f,r or h)end;function clearScreen()useBgColor()screen.drawClear()end;function useFgColor(s)local t=property.getNumber("foreground brightness")screen.setColor(t,t,t)end;function useBgColor(s)local t=property.getNumber("background brightness")screen.setColor(t,t,t)end;function useHlColor(s)local t=property.getNumber("highlight brightness")screen.setColor(t,t,t)end;function isOver(u)local v,w,x,y=getBounds(u)return touchCtl.x&gt;v and touchCtl.x&lt;v+x-1 and touchCtl.y&gt;w and touchCtl.y&lt;w+y-1 end;function getBounds(u)return(u.x or 0)*l,(u.y or 0)*l,(u.w or 1)*l,(u.h or 1)*l end;function renderComponent(t)local v,w,x,y=getBounds(t)if t.t=="txt"then useFgColor()screen.drawText(v+2,w+1,getText(t))elseif t.t=="btn"then if touchCtl.isTouch and isOver(t)then useFgColor()screen.drawRectF(v+1,w,x-2,y-1)useHlColor()else useHlColor()screen.drawRectF(v+1,w,x-2,y-1)useFgColor()end;screen.drawText(v+2,w+1,getText(t))elseif t.t=="banner"then useFgColor()screen.drawTextBox(v,w,x,y,getText(t),0,0)end end;function getText(u)if type(u.text)=="function"then return u.text()else return u.text end end;function renderMenu()local z=ui.menus[uiState.currentMenu]for A,u in ipairs(z.components)do renderComponent(u)end end;function onTick()touchCtl.isRelease=touchCtl.isTouch and not input.getBool(c)touchCtl.isTouch=input.getBool(c)if touchCtl.isTouch then touchCtl.x=input.getNumber(a)touchCtl.y=input.getNumber(b)end;if touchCtl.isRelease then local z=ui.menus[uiState.currentMenu]for A,u in ipairs(z.components)do if isOver(u)and u.act~=nil then u.act()end end else sendOp(g)end end;function onDraw()clearScreen()renderMenu(width)end'>
+					<pos x="-2" y="1.5"/>
+					<in1 component_id="22"/>
+				</object>
+			</c>
+			<c type="40">
+				<object id="12" count="3" offset="3">
+					<pos x="-0.75"/>
+					<inc component_id="10"/>
+					<in1 component_id="2"/>
+					<in2 component_id="4"/>
+					<in3 component_id="18"/>
+				</object>
+			</c>
+			<c type="56">
+				<object id="23" script='local a=1;local b=2;local c=3;local d=4;local e=5;local f=6;local g=0;local h=1;local i=2;local j=2;local k=1852;modeCtl={currentMode="idle",target=nil}navState={}function clearScreen()useBgColor()screen.drawClear()end;function useFgColor()local l=property.getNumber("foreground brightness")screen.setColor(l,l,l)end;function useBgColor()local l=property.getNumber("background brightness")screen.setColor(l,l,l)end;function useHlColor()local l=property.getNumber("highlight brightness")screen.setColor(l,l,l)end;function onTick()local m=input.getNumber(a)local n=input.getNumber(b)local o=input.getNumber(c)navState.x=input.getNumber(d)navState.y=input.getNumber(e)navState.phi=input.getNumber(f)if m==h then modeCtl.currentMode="compass"elseif m==i then modeCtl.currentMode="compass"modeCtl.target={x=n,y=o}end end;function renderCompassArrow(p,q,r)screen.drawLine(16+p,16,16+p,16+q)if r~=nil then screen.drawText(14+p,20,r)end end;function getPolarToTarget()local s=modeCtl.target.x-navState.x;local t=modeCtl.target.y-navState.y;local u=math.atan(t/s)if s&lt;0 then u=u+math.pi end;return math.sqrt(s*s+t*t),math.fmod(u+2*math.pi,2*math.pi)end;function formatDistance(v)if v&gt;k then return string.format("%.2fmi",v/k)else return string.format("%.0fm",v)end end;function renderTargetArrow()local w,u=getPolarToTarget()local x=u/2/math.pi-0.5;local y=(navState.phi-x)*48;local z=(navState.phi-1-x)*48;screen.setColor(0,255,0)screen.drawLine(16+y,16,16+y,13)screen.drawLine(16+z,16,16+z,13)useFgColor()screen.drawTextBox(1,1,screen.getWidth()-2,7,formatDistance(w),0,0)end;function renderHorizon()useHlColor()screen.drawLine(0,16,32,16)screen.drawLine(16,16,16,12)end;function renderCompass()renderHorizon()if modeCtl.target~=nil then renderTargetArrow()end;useFgColor()local A=(navState.phi+0.25)*48;local B=(navState.phi-0.75)*48;local C=(navState.phi+0.125)*48;local D=(navState.phi+0.375)*48;local E=(navState.phi-0.625)*48;local F=(navState.phi-0.5)*48;local G=(navState.phi+0.5)*48;local H=(navState.phi-0.25)*48;local I=(navState.phi+0.75)*48;local J=(navState.phi-0.375)*48;local K=(navState.phi+0.625)*48;local L=(navState.phi-0.125)*48;local M=navState.phi*48;renderCompassArrow(F,2,"E")renderCompassArrow(G,2,"E")renderCompassArrow(H,2,"S")renderCompassArrow(I,2,"S")renderCompassArrow(J,1)renderCompassArrow(K,1)renderCompassArrow(L,1)renderCompassArrow(M,2,"W")renderCompassArrow(C,1)renderCompassArrow(D,1)renderCompassArrow(E,1)screen.setColor(255,0,0)renderCompassArrow(A,3,"N")renderCompassArrow(B,3,"N")end;function onDraw()clearScreen()useFgColor()if modeCtl.currentMode=="compass"then renderCompass()end end'>
+					<pos x="0.5" y="0.5"/>
+					<in1 component_id="12"/>
+				</object>
+			</c>
+			<c type="56">
+				<object id="24" script='function onDraw()
+	local jitter = math.random(0, 255)
+	screen.setColor(jitter, jitter, jitter, property.getNumber("screen jitter"))
+	screen.drawRectF(0, 0, screen.getWidth(), screen.getHeight())
+end
+'>
+					<pos x="1.75" y="1.75"/>
+					<in2 component_id="10" node_index="1"/>
+				</object>
+			</c>
+			<c type="34">
+				<object id="26" n="foreground brightness">
+					<pos x="-3.5" y="0.25"/>
+					<v text="220" value="220"/>
+				</object>
+			</c>
+			<c type="34">
+				<object id="27" n="background brightness">
+					<pos x="-3.5" y="-0.25"/>
+					<v text="1" value="1"/>
+				</object>
+			</c>
+			<c type="34">
+				<object id="28" n="highlight brightness">
+					<pos x="-3.5" y="-0.75"/>
+					<v text="10" value="10"/>
+				</object>
+			</c>
+			<c type="34">
+				<object id="29" n="screen jitter">
+					<pos x="-3.5" y="-1.25"/>
+					<v text="2" value="2"/>
+				</object>
+			</c>
+			<c type="56">
+				<object id="30" script='function onDraw()
+	local jitter = math.random(0, 255)
+	screen.setColor(jitter, jitter, jitter, property.getNumber("screen jitter"))
+	screen.drawRectF(0, 0, screen.getWidth(), screen.getHeight())
+end
+'>
+					<pos x="1.75" y="0.5"/>
+					<in2 component_id="23" node_index="1"/>
+				</object>
+			</c>
+		</components>
+		<components_bridge>
+			<c type="2">
+				<object id="2">
+					<pos x="-2" y="0.75"/>
+				</object>
+			</c>
+			<c type="2">
+				<object id="4">
+					<pos x="-2" y="0.25"/>
+				</object>
+			</c>
+			<c type="7">
+				<object id="7">
+					<pos x="3" y="0.5"/>
+					<in1 component_id="30" node_index="1"/>
+				</object>
+			</c>
+			<c type="7">
+				<object id="16">
+					<pos x="3" y="1.75"/>
+					<in1 component_id="24" node_index="1"/>
+				</object>
+			</c>
+			<c type="2">
+				<object id="18">
+					<pos x="-2" y="-0.25"/>
+				</object>
+			</c>
+			<c type="4">
+				<object id="22">
+					<pos x="-3.25" y="1.75"/>
+				</object>
+			</c>
+		</components_bridge>
+		<groups/>
+		<component_states>
+			<c0 id="10" script='local a=3;local b=4;local c=1;local d=1;local e=2;local f=3;local g=0;local h=0;local i=1;local j=2;local k=2;local l=8;function gotoMenuCb(m)uiState.menu={}uiState.currentMenu=m;if ui.menus[m].init~=nil then ui.menus[m].init()end end;function gotoMenu(m)return function()gotoMenuCb(m)end end;function add(n)return function()uiState.menu.val=uiState.menu.val..n end end;function remove()return function()local o=string.len(uiState.menu.val)if o==1 then gotoMenuCb("main")else uiState.menu.val=string.sub(uiState.menu.val,1,-2)end end end;ui={menus={main={components={{t="txt",text="=NAV=",w=4},{t="btn",text="FREE",y=1,w=4,act=gotoMenu("freeNav")},{t="btn",text="SET",y=2,w=4,act=gotoMenu("keypad")},{t="btn",text="LOCOD",y=3,w=4,act=gotoMenu("locode")}}},freeNav={init=function()sendOp(i)end,components={{t="banner",text="FREE",y=1,w=4},{t="banner",text="NAV",y=2,w=4},{t="btn",text="&lt;-",y=3,x=2,w=2,act=gotoMenu("main")}}},locode={components={{t="banner",text="LOCODE",y=1,w=4},{t="banner",text="TBD",y=2,w=4},{t="btn",text="&lt;-",y=3,x=2,w=2,act=gotoMenu("main")}}},keypad={init=function()uiState.menu.val="+"end,components={{t="txt",w=3,text=function()return uiState.menu.val end},{t="btn",text="1",y=1,act=add(1)},{t="btn",text="2",x=1,y=1,act=add(2)},{t="btn",text="3",x=2,y=1,act=add(3)},{t="btn",text="X",x=3,y=1,act=remove()},{t="btn",text="4",y=2,act=add(4)},{t="btn",text="5",x=1,y=2,act=add(5)},{t="btn",text="6",x=2,y=2,act=add(6)},{t="btn",x=3,y=2,text=function()if uiState.menu.val=="+"then return"-"elseif uiState.menu.val=="-"then return"+"else return"0"end end,act=function()if uiState.menu.val=="+"then uiState.menu.val="-"elseif uiState.menu.val=="-"then uiState.menu.val="+"else uiState.menu.val=uiState.menu.val.."0"end end},{t="btn",text="7",y=3,act=add(7)},{t="btn",text="8",x=1,y=3,act=add(8)},{t="btn",text="9",x=2,y=3,act=add(9)},{t="btn",text="V",x=3,y=3,act=function()if uiState.menu.x==nil then uiState.menu.x=tonumber(uiState.menu.val)uiState.menu.val="+"else sendOp(j,uiState.menu.x,tonumber(uiState.menu.val))gotoMenuCb("main")end end}}}}}uiState={currentMenu="main",colors={},menu={}}touchCtl={}function sendOp(p,q,r)output.setNumber(d,p or g)output.setNumber(e,q or h)output.setNumber(f,r or h)end;function clearScreen()useBgColor()screen.drawClear()end;function useFgColor(s)local t=property.getNumber("foreground brightness")screen.setColor(t,t,t)end;function useBgColor(s)local t=property.getNumber("background brightness")screen.setColor(t,t,t)end;function useHlColor(s)local t=property.getNumber("highlight brightness")screen.setColor(t,t,t)end;function isOver(u)local v,w,x,y=getBounds(u)return touchCtl.x&gt;v and touchCtl.x&lt;v+x-1 and touchCtl.y&gt;w and touchCtl.y&lt;w+y-1 end;function getBounds(u)return(u.x or 0)*l,(u.y or 0)*l,(u.w or 1)*l,(u.h or 1)*l end;function renderComponent(t)local v,w,x,y=getBounds(t)if t.t=="txt"then useFgColor()screen.drawText(v+2,w+1,getText(t))elseif t.t=="btn"then if touchCtl.isTouch and isOver(t)then useFgColor()screen.drawRectF(v+1,w,x-2,y-1)useHlColor()else useHlColor()screen.drawRectF(v+1,w,x-2,y-1)useFgColor()end;screen.drawText(v+2,w+1,getText(t))elseif t.t=="banner"then useFgColor()screen.drawTextBox(v,w,x,y,getText(t),0,0)end end;function getText(u)if type(u.text)=="function"then return u.text()else return u.text end end;function renderMenu()local z=ui.menus[uiState.currentMenu]for A,u in ipairs(z.components)do renderComponent(u)end end;function onTick()touchCtl.isRelease=touchCtl.isTouch and not input.getBool(c)touchCtl.isTouch=input.getBool(c)if touchCtl.isTouch then touchCtl.x=input.getNumber(a)touchCtl.y=input.getNumber(b)end;if touchCtl.isRelease then local z=ui.menus[uiState.currentMenu]for A,u in ipairs(z.components)do if isOver(u)and u.act~=nil then u.act()end end else sendOp(g)end end;function onDraw()clearScreen()renderMenu(width)end'>
+				<pos x="-2" y="1.5"/>
+				<in1 component_id="22"/>
+			</c0>
+			<c1 id="12" count="3" offset="3">
+				<pos x="-0.75"/>
+				<inc component_id="10"/>
+				<in1 component_id="2"/>
+				<in2 component_id="4"/>
+				<in3 component_id="18"/>
+			</c1>
+			<c2 id="23" script='local a=1;local b=2;local c=3;local d=4;local e=5;local f=6;local g=0;local h=1;local i=2;local j=2;local k=1852;modeCtl={currentMode="idle",target=nil}navState={}function clearScreen()useBgColor()screen.drawClear()end;function useFgColor()local l=property.getNumber("foreground brightness")screen.setColor(l,l,l)end;function useBgColor()local l=property.getNumber("background brightness")screen.setColor(l,l,l)end;function useHlColor()local l=property.getNumber("highlight brightness")screen.setColor(l,l,l)end;function onTick()local m=input.getNumber(a)local n=input.getNumber(b)local o=input.getNumber(c)navState.x=input.getNumber(d)navState.y=input.getNumber(e)navState.phi=input.getNumber(f)if m==h then modeCtl.currentMode="compass"elseif m==i then modeCtl.currentMode="compass"modeCtl.target={x=n,y=o}end end;function renderCompassArrow(p,q,r)screen.drawLine(16+p,16,16+p,16+q)if r~=nil then screen.drawText(14+p,20,r)end end;function getPolarToTarget()local s=modeCtl.target.x-navState.x;local t=modeCtl.target.y-navState.y;local u=math.atan(t/s)if s&lt;0 then u=u+math.pi end;return math.sqrt(s*s+t*t),math.fmod(u+2*math.pi,2*math.pi)end;function formatDistance(v)if v&gt;k then return string.format("%.2fmi",v/k)else return string.format("%.0fm",v)end end;function renderTargetArrow()local w,u=getPolarToTarget()local x=u/2/math.pi-0.5;local y=(navState.phi-x)*48;local z=(navState.phi-1-x)*48;screen.setColor(0,255,0)screen.drawLine(16+y,16,16+y,13)screen.drawLine(16+z,16,16+z,13)useFgColor()screen.drawTextBox(1,1,screen.getWidth()-2,7,formatDistance(w),0,0)end;function renderHorizon()useHlColor()screen.drawLine(0,16,32,16)screen.drawLine(16,16,16,12)end;function renderCompass()renderHorizon()if modeCtl.target~=nil then renderTargetArrow()end;useFgColor()local A=(navState.phi+0.25)*48;local B=(navState.phi-0.75)*48;local C=(navState.phi+0.125)*48;local D=(navState.phi+0.375)*48;local E=(navState.phi-0.625)*48;local F=(navState.phi-0.5)*48;local G=(navState.phi+0.5)*48;local H=(navState.phi-0.25)*48;local I=(navState.phi+0.75)*48;local J=(navState.phi-0.375)*48;local K=(navState.phi+0.625)*48;local L=(navState.phi-0.125)*48;local M=navState.phi*48;renderCompassArrow(F,2,"E")renderCompassArrow(G,2,"E")renderCompassArrow(H,2,"S")renderCompassArrow(I,2,"S")renderCompassArrow(J,1)renderCompassArrow(K,1)renderCompassArrow(L,1)renderCompassArrow(M,2,"W")renderCompassArrow(C,1)renderCompassArrow(D,1)renderCompassArrow(E,1)screen.setColor(255,0,0)renderCompassArrow(A,3,"N")renderCompassArrow(B,3,"N")end;function onDraw()clearScreen()useFgColor()if modeCtl.currentMode=="compass"then renderCompass()end end'>
+				<pos x="0.5" y="0.5"/>
+				<in1 component_id="12"/>
+			</c2>
+			<c3 id="24" script='function onDraw()
+	local jitter = math.random(0, 255)
+	screen.setColor(jitter, jitter, jitter, property.getNumber("screen jitter"))
+	screen.drawRectF(0, 0, screen.getWidth(), screen.getHeight())
+end
+'>
+				<pos x="1.75" y="1.75"/>
+				<in2 component_id="10" node_index="1"/>
+			</c3>
+			<c4 id="26" n="foreground brightness">
+				<pos x="-3.5" y="0.25"/>
+				<v text="220" value="220"/>
+			</c4>
+			<c5 id="27" n="background brightness">
+				<pos x="-3.5" y="-0.25"/>
+				<v text="1" value="1"/>
+			</c5>
+			<c6 id="28" n="highlight brightness">
+				<pos x="-3.5" y="-0.75"/>
+				<v text="10" value="10"/>
+			</c6>
+			<c7 id="29" n="screen jitter">
+				<pos x="-3.5" y="-1.25"/>
+				<v text="2" value="2"/>
+			</c7>
+			<c8 id="30" script='function onDraw()
+	local jitter = math.random(0, 255)
+	screen.setColor(jitter, jitter, jitter, property.getNumber("screen jitter"))
+	screen.drawRectF(0, 0, screen.getWidth(), screen.getHeight())
+end
+'>
+				<pos x="1.75" y="0.5"/>
+				<in2 component_id="23" node_index="1"/>
+			</c8>
+		</component_states>
+		<component_bridge_states>
+			<c0 id="2">
+				<pos x="-2" y="0.75"/>
+			</c0>
+			<c1 id="4">
+				<pos x="-2" y="0.25"/>
+			</c1>
+			<c2 id="7">
+				<pos x="3" y="0.5"/>
+				<in1 component_id="30" node_index="1"/>
+			</c2>
+			<c3 id="16">
+				<pos x="3" y="1.75"/>
+				<in1 component_id="24" node_index="1"/>
+			</c3>
+			<c4 id="18">
+				<pos x="-2" y="-0.25"/>
+			</c4>
+			<c5 id="22">
+				<pos x="-3.25" y="1.75"/>
+			</c5>
+		</component_bridge_states>
+		<group_states/>
+	</group>
+</microprocessor>
+
